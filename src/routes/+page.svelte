@@ -76,7 +76,7 @@
 
     async function cargarMesesVotados(usuarioId) {
         try {
-            const res = await fetch(`http://127.0.0.1:8000/api/meses-votados/?usuario_id=${usuarioId}`);
+            const res = await fetch(`https://backenddddd-ws89.onrender.com/api/meses-votados/?usuario_id=${usuarioId}`);
             if (!res.ok) return;
             const data = await res.json();
             if (Array.isArray(data)) {
@@ -109,7 +109,7 @@
         let usuarioIdGuardado = localStorage.getItem('usuario_id');
         if (!usuarioIdGuardado) {
             try {
-                const res = await fetch('http://127.0.0.1:8000/api/usuarios/', {
+                const res = await fetch('https://backenddddd-ws89.onrender.com/api/usuarios/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ nombre: nombreGuardado })

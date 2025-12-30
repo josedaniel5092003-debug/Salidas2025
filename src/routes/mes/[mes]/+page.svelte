@@ -3,10 +3,8 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 
-	// mes actual desde la URL
 	$: mes = $page.params.mes;
 
-	// preguntas base (reutilizables)
 	let preguntas = [
 		{ id: 'lugar', texto: '📍 ¿Qué tal fue el lugar?', valor: 3 },
 		{ id: 'puntualidad', texto: '⏰ Puntualidad del anfitrión', valor: 3 },
@@ -18,12 +16,9 @@
 	let usuario = '';
 	let mesesVotados = [];
 
-	// cálculo del score
 	$: total = preguntas.reduce((acc, p) => acc + p.valor, 0);
 
-	function volver() {
-		goto('/');
-	}
+	function volver() { goto('/'); }
 
 	async function guardarSalida() {
 		const usuarioId = localStorage.getItem('usuario_id');
@@ -33,7 +28,7 @@
 		}
 
 		try {
-			const res = await fetch('http://127.0.0.1:8000/api/salidas/', {
+			const res = await fetch('https://backenddddd-ws89.onrender.com/api/salidas/', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -44,16 +39,13 @@
 					creatividad: preguntas[2].valor,
 					ambiente: preguntas[3].valor,
 					repetir: preguntas[4].valor,
-					puntaje_total: preguntas.reduce((acc, p) => acc + p.valor, 0)
+					puntaje_total: total
 				})
 			});
 
 			if (res.ok) {
-				// ✅ Agregar mes a mesesVotados para bloquearlo
 				mesesVotados.push(mes.toLowerCase());
 				localStorage.setItem('meses_votados', JSON.stringify(mesesVotados));
-
-				// Regresar al carrusel
 				goto('/');
 			} else {
 				const errorData = await res.json();
@@ -67,71 +59,103 @@
 	}
 
 	onMount(() => {
-		// Cargar usuario y meses votados del localStorage
 		usuario = localStorage.getItem('usuario_nombre') || '';
 		mesesVotados = JSON.parse(localStorage.getItem('meses_votados') || '[]');
 	});
 </script>
 
-<div class="min-h-screen w-full flex flex-col items-center px-4 py-6 
-	bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-600 text-white">
+<!-- FONDO FIJO QUE CUBRE LA CLASE PROBLEMÁTICA -->
+<div class="fixed inset-0 bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-600 -z-20"></div>
 
-	<!-- TÍTULO -->
-	<h1 class="text-3xl sm:text-4xl font-extrabold capitalize mb-2 text-center drop-shadow-lg">
-		{mes}
-	</h1>
+<!-- CONTENIDO PRINCIPAL -->
+<div class="min-h-screen text-white p-4">
+	<div class="max-w-md mx-auto relative z-10">
+		
+		<!-- HEADER -->
+		<div class="text-center pt-4 pb-6">
+			<h1 class="text-3xl font-bold capitalize mb-2">{mes}</h1>
+			<p class="text-white/90">Puntúa esta salida y ve qué tan legendaria fue 🚀</p>
+		</div>
 
-	<p class="text-sm sm:text-base opacity-90 mb-6 text-center drop-shadow">
-		Puntúa esta salida y ve qué tan legendaria fue 🚀
-	</p>
+		<!-- IMAGEN -->
+		<div class="mb-6 flex justify-center">
+			<img
+				src={`/meses/${mes}.jpg`}
+				alt={mes}
+				class="w-full max-w-xs h-56 object-cover rounded-2xl shadow-xl"
+			/>
+		</div>
 
-	<!-- IMAGEN PRINCIPAL -->
-	<img
-		src={`/lib/assets/meses/${mes}.jpg`}
-		alt={mes}
-		class="w-full max-w-sm h-48 sm:h-60 object-cover rounded-2xl shadow-2xl mb-6"
-	/>
+		<!-- TARJETA DE PREGUNTAS -->
+		<div class="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-xl mb-6">
+			{#each preguntas as pregunta}
+				<div class="mb-5 last:mb-0">
+					<p class="font-semibold text-gray-800 mb-3 text-center">
+						{pregunta.texto}
+					</p>
 
-	<!-- TARJETA DE PREGUNTAS -->
-	<div class="w-full max-w-md bg-white/90 backdrop-blur-md rounded-2xl p-5 text-gray-900 shadow-xl space-y-5">
+					<input
+						type="range"
+						min="1"
+						max="5"
+						step="1"
+						bind:value={pregunta.valor}
+						class="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer accent-purple-600"
+					/>
 
-		{#each preguntas as pregunta}
-			<div>
-				<p class="font-semibold mb-2 text-gray-800">
-					{pregunta.texto}
-				</p>
+					<div class="flex justify-between items-center text-xs text-gray-600 px-1 mt-2">
+						<span class="whitespace-nowrap">😕 meh</span>
+						<span class="font-bold text-purple-600 text-sm">{pregunta.valor}/5</span>
+						<span class="whitespace-nowrap">🔥 increíble</span>
+					</div>
+				</div>
+			{/each}
 
-				<input
-					type="range"
-					min="1"
-					max="5"
-					step="1"
-					bind:value={pregunta.valor}
-					class="w-full accent-purple-600"
-				/>
-
-				<div class="flex justify-between text-xs mt-1 opacity-70 text-gray-600">
-					<span>meh</span>
-					<span>🔥 increíble</span>
+			<div class="pt-4 mt-4 border-t border-gray-300">
+				<div class="flex justify-between items-center">
+					<span class="font-bold text-gray-800">Puntaje total:</span>
+					<span class="text-2xl font-bold text-purple-700">{total}/25</span>
 				</div>
 			</div>
-		{/each}
+		</div>
+
+		<!-- BOTONES -->
+		<div class="space-y-3">
+			<button
+				on:click={guardarSalida}
+				class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl shadow-lg transition"
+			>
+				💾 Guardar puntuación
+			</button>
+
+			<button
+				on:click={volver}
+				class="w-full bg-white/20 hover:bg-white/30 text-white py-3 rounded-xl transition text-center"
+			>
+				← Volver al carrusel
+			</button>
+		</div>
+
 	</div>
-
-	<!-- BOTÓN GUARDAR (afuera de la tarjeta de preguntas) -->
-	<button
-		class="w-full max-w-md mt-6 py-3 rounded-xl bg-purple-600 text-white font-bold shadow-lg hover:bg-purple-700 active:scale-95 transition"
-		on:click={guardarSalida}
-	>
-		Guardar puntuación
-	</button>
-
-	<!-- VOLVER -->
-	<button
-		class="mt-6 text-sm underline opacity-80 text-white hover:opacity-100"
-		on:click={volver}
-	>
-		← Volver al carrusel
-		
-	</button>
 </div>
+
+<style>
+	/* SOLUCIÓN DEFINITIVA - Sobrescribe la clase problemática */
+	:global(.app.s-7IPF32Wcq3s8),
+	:global(html),
+	:global(body) {
+		background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #4f46e5 100%) !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		position: relative !important;
+	}
+	
+	/* Si la clase tiene position: fixed, la cambiamos */
+	:global(.app.s-7IPF32Wcq3s8) {
+		position: relative !important;
+		inset: auto !important;
+		width: auto !important;
+		height: auto !important;
+		overflow-x: visible !important;
+	}
+</style>

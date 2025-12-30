@@ -3,7 +3,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   // Si no tienes svelte-confetti instalado, comenta esta línea o instálalo
-import Confetti from 'svelte-confetti';
+//import Confetti from 'svelte-confetti';
 
   let mesesStats = [];
   let mesGanador = null;
@@ -23,7 +23,7 @@ import Confetti from 'svelte-confetti';
 
   onMount(async () => {
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/resultados/');
+      const res = await fetch('https://backenddddd-ws89.onrender.com/api/resultados/');
       if (!res.ok) throw new Error("Error cargando resultados");
       const data = await res.json();
       
@@ -250,150 +250,158 @@ import Confetti from 'svelte-confetti';
   </style>
 {/if}
 
-<div class="min-h-screen w-full px-4 py-5 
+<!-- CAMBIO PRINCIPAL: Contenedor centrado con max-width -->
+<div class="min-h-screen w-full 
   bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-600 text-white
-  overflow-x-hidden relative">
+  overflow-x-hidden relative flex flex-col items-center">
 
   <!-- Botón para volver - CORREGIDO: usando onclick en lugar de on:click -->
   <button class="btn-volver" onclick={volver} aria-label="Volver">
     ←
   </button>
 
-  <!-- Header -->
-  <div class="header-container sticky top-0 z-10 pt-5 pb-4 bg-gradient-to-b from-pink-500/95 via-purple-500/95 to-transparent backdrop-blur-lg">
-    <h1 class="text-3xl font-black text-center mb-2 drop-shadow-lg">
-      🏆 Resultados Globales
-    </h1>
-    <p class="text-sm text-center opacity-90">
-      {mesesStats.filter(m => m.totalVotos > 0).length} meses votados
-      {#if mesGanador && mesGanador.totalVotos > 0}
-        <span class="block text-xs mt-1">¡Tenemos un ganador! 🎉</span>
-      {/if}
-    </p>
-  </div>
+  <!-- CONTENEDOR PRINCIPAL CENTRADO -->
+  <div class="w-full max-w-4xl px-4 py-5">
 
-  <!-- Mes ganador destacado -->
-  {#if mesGanador && mesGanador.totalVotos > 0}
-    <div class="golden-card mb-8 p-6 rounded-2xl relative overflow-hidden card-animation" 
-         style="animation-delay: 0.1s">
-      <div class="winner-glow"></div>
-      <div 
-        class="card-bg-image"
-        style="background-image: url('/meses/{mesGanador.mes}.jpg');"
-      ></div>
-      
-      <div class="relative z-10">
-        <div class="flex flex-col sm:flex-row items-center justify-center mb-4">
-          <div class="text-5xl mb-3 sm:mb-0 sm:mr-4">🏆</div>
-          <div class="text-center sm:text-left">
-            <div class="text-sm opacity-90 uppercase tracking-wider">Mes Ganador</div>
-            <div class="text-2xl font-black capitalize mt-1">{mesGanador.mes}</div>
-          </div>
-        </div>
-        
-        <div class="grid grid-cols-3 gap-4 mt-6">
-          <div class="bg-black/40 backdrop-blur-sm p-4 rounded-xl text-center">
-            <div class="text-xs opacity-90 mb-2 uppercase">Puntos</div>
-            <div class="text-2xl font-black text-yellow-300">{mesGanador.totalPuntos}</div>
-          </div>
-          <div class="bg-black/40 backdrop-blur-sm p-4 rounded-xl text-center">
-            <div class="text-xs opacity-90 mb-2 uppercase">Votos</div>
-            <div class="text-2xl font-black text-blue-300">{mesGanador.totalVotos}</div>
-          </div>
-          <div class="bg-black/40 backdrop-blur-sm p-4 rounded-xl text-center">
-            <div class="text-xs opacity-90 mb-2 uppercase">Promedio</div>
-            <div class="text-2xl font-black text-green-300">{mesGanador.promedio.toFixed(1)}</div>
-          </div>
-        </div>
-      </div>
+    <!-- Header -->
+    <div class="header-container sticky top-0 z-10 pt-5 pb-4 bg-gradient-to-b from-pink-500/95 via-purple-500/95 to-transparent backdrop-blur-lg rounded-b-2xl">
+      <h1 class="text-3xl font-black text-center mb-2 drop-shadow-lg">
+        🏆 Resultados Globales
+      </h1>
+      <p class="text-sm text-center opacity-90">
+        {mesesStats.filter(m => m.totalVotos > 0).length} meses votados
+        {#if mesGanador && mesGanador.totalVotos > 0}
+          <span class="block text-xs mt-1">¡Tenemos un ganador! 🎉</span>
+        {/if}
+      </p>
     </div>
-  {:else}
-    <div class="mb-8 p-6 bg-white/20 backdrop-blur-sm rounded-2xl text-center card-animation">
-      <div class="text-4xl mb-3">📊</div>
-      <div class="font-bold text-lg">Esperando votos</div>
-      <div class="text-sm opacity-90 mt-2">Ningún mes ha sido votado aún</div>
-    </div>
-  {/if}
 
-  <!-- Lista de meses -->
-  <div class="space-y-4 pb-28">
-    {#each mesesStats as stat, index}
-      <div 
-        class="card-bg {getRankColor(index)} card-animation"
-        style="animation-delay: {0.2 + (index * 0.05)}s"
-      >
+    <!-- Mes ganador destacado -->
+    {#if mesGanador && mesGanador.totalVotos > 0}
+      <div class="golden-card mb-8 p-6 rounded-2xl relative overflow-hidden card-animation" 
+           style="animation-delay: 0.1s">
+        <div class="winner-glow"></div>
         <div 
           class="card-bg-image"
-          style="background-image: url('/meses/{stat.mes}.jpg');"
-          onerror={handleImageError}
+          style="background-image: url('/meses/{mesGanador.mes}.jpg');"
         ></div>
         
-        <div class="card-content p-4">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center flex-1">
-              <div class="text-2xl font-black mr-4 min-w-[44px]">
-                {getRankEmoji(index)}
-              </div>
-              <div class="flex-1">
-                <div class="text-lg font-black capitalize">{stat.mes}</div>
-                {#if stat.totalVotos === 0}
-                  <div class="text-xs opacity-80 mt-1 flex items-center">
-                    <span class="inline-block w-2 h-2 bg-gray-400 rounded-full mr-1"></span>
-                    Sin votos
-                  </div>
-                {:else}
-                  <div class="text-xs opacity-80 mt-1 flex items-center">
-                    <span class="inline-block w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></span>
-                    {stat.totalVotos} {stat.totalVotos === 1 ? 'voto' : 'votos'}
-                  </div>
-                {/if}
-              </div>
-            </div>
-            
-            <div class="text-right ml-4">
-              <div class="text-xs opacity-90 uppercase mb-1">Promedio</div>
-              <div class="text-2xl font-black">
-                {stat.promedio.toFixed(1)}
-                {#if stat.totalVotos > 0}
-                  <span class="text-xs font-normal ml-1 opacity-70"></span>
-                {/if}
-              </div>
+        <div class="relative z-10">
+          <div class="flex flex-col sm:flex-row items-center justify-center mb-4">
+            <div class="text-5xl mb-3 sm:mb-0 sm:mr-4">🏆</div>
+            <div class="text-center sm:text-left">
+              <div class="text-sm opacity-90 uppercase tracking-wider">Mes Ganador</div>
+              <div class="text-2xl font-black capitalize mt-1">{mesGanador.mes}</div>
             </div>
           </div>
           
-          <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/20">
-            <div class="bg-black/30 backdrop-blur-sm p-3 rounded-lg">
-              <div class="text-xs opacity-90 mb-1">Puntos totales</div>
-              <div class="text-lg font-bold">{stat.totalPuntos}</div>
+          <div class="grid grid-cols-3 gap-4 mt-6">
+            <div class="bg-black/40 backdrop-blur-sm p-4 rounded-xl text-center">
+              <div class="text-xs opacity-90 mb-2 uppercase">Puntos</div>
+              <div class="text-2xl font-black text-yellow-300">{mesGanador.totalPuntos}</div>
             </div>
-            <div class="bg-black/30 backdrop-blur-sm p-3 rounded-lg">
-              <div class="text-xs opacity-90 mb-1">Total votos</div>
-              <div class="text-lg font-bold">{stat.totalVotos}</div>
+            <div class="bg-black/40 backdrop-blur-sm p-4 rounded-xl text-center">
+              <div class="text-xs opacity-90 mb-2 uppercase">Votos</div>
+              <div class="text-2xl font-black text-blue-300">{mesGanador.totalVotos}</div>
+            </div>
+            <div class="bg-black/40 backdrop-blur-sm p-4 rounded-xl text-center">
+              <div class="text-xs opacity-90 mb-2 uppercase">Promedio</div>
+              <div class="text-2xl font-black text-green-300">{mesGanador.promedio.toFixed(1)}</div>
             </div>
           </div>
         </div>
       </div>
-    {/each}
-  </div>
+    {:else}
+      <div class="mb-8 p-6 bg-white/20 backdrop-blur-sm rounded-2xl text-center card-animation">
+        <div class="text-4xl mb-3">📊</div>
+        <div class="font-bold text-lg">Esperando votos</div>
+        <div class="text-sm opacity-90 mt-2">Ningún mes ha sido votado aún</div>
+      </div>
+    {/if}
+
+    <!-- Lista de meses -->
+    <div class="space-y-4 pb-28">
+      {#each mesesStats as stat, index}
+        <div 
+          class="card-bg {getRankColor(index)} card-animation"
+          style="animation-delay: {0.2 + (index * 0.05)}s"
+        >
+          <div 
+            class="card-bg-image"
+            style="background-image: url('/meses/{stat.mes}.jpg');"
+            onerror={handleImageError}
+          ></div>
+          
+          <div class="card-content p-4">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center flex-1">
+                <div class="text-2xl font-black mr-4 min-w-[44px]">
+                  {getRankEmoji(index)}
+                </div>
+                <div class="flex-1">
+                  <div class="text-lg font-black capitalize">{stat.mes}</div>
+                  {#if stat.totalVotos === 0}
+                    <div class="text-xs opacity-80 mt-1 flex items-center">
+                      <span class="inline-block w-2 h-2 bg-gray-400 rounded-full mr-1"></span>
+                      Sin votos
+                    </div>
+                  {:else}
+                    <div class="text-xs opacity-80 mt-1 flex items-center">
+                      <span class="inline-block w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></span>
+                      {stat.totalVotos} {stat.totalVotos === 1 ? 'voto' : 'votos'}
+                    </div>
+                  {/if}
+                </div>
+              </div>
+              
+              <div class="text-right ml-4">
+                <div class="text-xs opacity-90 uppercase mb-1">Promedio</div>
+                <div class="text-2xl font-black">
+                  {stat.promedio.toFixed(1)}
+                  {#if stat.totalVotos > 0}
+                    <span class="text-xs font-normal ml-1 opacity-70"></span>
+                  {/if}
+                </div>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/20">
+              <div class="bg-black/30 backdrop-blur-sm p-3 rounded-lg">
+                <div class="text-xs opacity-90 mb-1">Puntos totales</div>
+                <div class="text-lg font-bold">{stat.totalPuntos}</div>
+              </div>
+              <div class="bg-black/30 backdrop-blur-sm p-3 rounded-lg">
+                <div class="text-xs opacity-90 mb-1">Total votos</div>
+                <div class="text-lg font-bold">{stat.totalVotos}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {/each}
+    </div>
+
+  </div> <!-- Cierre del contenedor centrado max-w-4xl -->
 
   <!-- Footer con botón para volver -->
   <div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 via-black/50 to-transparent backdrop-blur-lg">
-    <div class="flex flex-col items-center">
-      <button 
-        class="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 
-               text-white font-bold px-8 py-4 rounded-full transition-all duration-300 
-               flex items-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
-        onclick={volver}
-      >
-        <span class="text-xl">←</span>
-        <span>Volver al Carrusel</span>
-      </button>
-      
-      <div class="text-center text-xs opacity-80 mt-4 space-y-1">
-        <p>✨ El promedio se calcula: Puntos totales ÷ Total de votos</p>
-        {#if mesGanador && mesGanador.totalVotos > 0}
-          <p class="text-yellow-300 animate-pulse">🎊 ¡{mesGanador.mes} es el mes favorito!</p>
-        {/if}
+    <div class="max-w-4xl mx-auto">
+      <div class="flex flex-col items-center">
+        <button 
+          class="bg-purple-600 hover:bg-purple-700 
+                 text-white font-bold px-8 py-4 rounded-full transition-all duration-300 
+                 flex items-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+          on:click={volver}
+        >
+          <span class="text-xl">←</span>
+          <span>Volver al Carrusel</span>
+        </button>
+        
+        <div class="text-center text-xs opacity-80 mt-4 space-y-1">
+          <p>✨ El promedio se calcula: Puntos totales ÷ Total de votos</p>
+          {#if mesGanador && mesGanador.totalVotos > 0}
+            <p class="text-yellow-300 animate-pulse">🎊 ¡{mesGanador.mes} es el mes favorito!</p>
+          {/if}
+        </div>
       </div>
     </div>
   </div>
