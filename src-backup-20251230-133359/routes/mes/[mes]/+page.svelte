@@ -3,6 +3,9 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 
+	// ✅ VARIABLE DINÁMICA PARA API
+	const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
 	// mes actual desde la URL
 	$: mes = $page.params.mes;
 
@@ -33,7 +36,8 @@
 		}
 
 		try {
-			const res = await fetch('http://127.0.0.1:8000/api/salidas/', {
+			// ✅ CAMBIO: Usar API_URL dinámica
+			const res = await fetch(`${API_URL}/api/salidas/`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -86,6 +90,7 @@
 	</p>
 
 	<!-- IMAGEN PRINCIPAL -->
+	<!-- ⚠️ NOTA: Verifica la ruta de las imágenes -->
 	<img
 		src={`/lib/assets/meses/${mes}.jpg`}
 		alt={mes}

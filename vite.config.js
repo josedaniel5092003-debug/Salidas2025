@@ -3,10 +3,13 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [sveltekit()],
-  server: {
-    host: true,       // <-- ESTO PERMITE QUE LA RED LOCAL ENTRE
-    port: 5173,       // (opcional)
+  optimizeDeps: {
+    include: ['tailwindcss'],
+    esbuildOptions: {
+      target: 'es2020'
+    }
+  },
+  esbuild: {
+    target: 'es2020'
   }
 });
-//npm run dev -- --host
-// python manage.py runserver 0.0.0.0:8000

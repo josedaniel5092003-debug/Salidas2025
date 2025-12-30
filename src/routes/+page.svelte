@@ -2,9 +2,6 @@
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
 
-    // ✅ VARIABLE DINÁMICA PARA API (IMPORTANTE)
-    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
-
     const meses = [
         "enero","febrero","marzo","abril","mayo","junio",
         "julio","agosto","septiembre","octubre","noviembre","diciembre"
@@ -74,13 +71,12 @@
     }
 
     function irResultados() {
-        goto('/resultados');
+        goto('/resultados'); // página de resultados
     }
 
     async function cargarMesesVotados(usuarioId) {
         try {
-            // ✅ USANDO API_URL DINÁMICA
-            const res = await fetch(`${API_URL}/api/meses-votados/?usuario_id=${usuarioId}`);
+            const res = await fetch(`http://127.0.0.1:8000/api/meses-votados/?usuario_id=${usuarioId}`);
             if (!res.ok) return;
             const data = await res.json();
             if (Array.isArray(data)) {
@@ -113,8 +109,7 @@
         let usuarioIdGuardado = localStorage.getItem('usuario_id');
         if (!usuarioIdGuardado) {
             try {
-                // ✅ USANDO API_URL DINÁMICA
-                const res = await fetch(`${API_URL}/api/usuarios/`, {
+                const res = await fetch('http://127.0.0.1:8000/api/usuarios/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ nombre: nombreGuardado })
@@ -135,3 +130,168 @@
         }
     });
 </script>
+
+<style>
+    /* 🎨 Fondo estilo Spotify Wrapped */
+    .screen {
+        min-height: 100vh;
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+            135deg,
+            #6a00ff,
+            #1125d8ff,
+            #03ffffff
+        );
+        background-size: 400% 400%;
+        animation: gradientMove 12s ease infinite;
+        overflow: hidden;
+        color: white;
+        text-align: center;
+        font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    @keyframes gradientMove {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* 🧠 Texto */
+    .title {
+        font-size: 1.6rem;
+        font-weight: 900;
+        margin-bottom: 0.3rem;
+        letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+        opacity: 0.85;
+        margin-bottom: 1.2rem;
+    }
+
+    /* 🎠 Carrusel */
+    .carousel {
+        perspective: 1200px;
+        width: 100%;
+        height: 420px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card {
+        width: min(75vw, 280px);
+        height: min(105vw, 380px);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform-style: preserve-3d;
+        transition: transform 0.9s cubic-bezier(.2,.8,.2,1), opacity 0.9s;
+        cursor: pointer;
+    }
+
+    .card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 18px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+    }
+
+    .bloqueado {
+        pointer-events: none;
+        filter: grayscale(1) brightness(0.6);
+    }
+
+    .check {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: #22c55e;
+        color: white;
+        font-weight: 900;
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    }
+
+    .hint {
+        font-size: 0.75rem;
+        opacity: 0.7;
+        margin-top: 1rem;
+    }
+</style>
+
+<div class="screen">
+    <div class="title">Nuestras salidas del año ✨</div>
+    <div class="subtitle">
+        {usuario ? `¡Hola ${usuario}! Revivamos cada mes como un recuerdo épico` : 'Revivamos cada mes como un recuerdo épico'}
+    </div>
+
+    <div 
+        class="carousel"
+        on:touchstart={handleTouchStart}
+        on:touchend={handleTouchEnd}
+        on:mousedown={stopAutoPlay}
+    >
+        {#each meses as mes, i}
+            {#if Math.abs(i - currentIndex) <= 2 || Math.abs(i - currentIndex) >= meses.length - 2}
+                <div
+                    class="card"
+                    on:click={() => goToMonth(mes)}
+                    class:bloqueado={mesesVotados.includes(mes.toLowerCase())}
+                    style="
+                        transform:
+                            translate(-50%, -50%)
+                            translateX({(i - currentIndex) * 130}px)
+                            scale({1 - Math.abs(i - currentIndex) * 0.15})
+                            rotateY({(i - currentIndex) * -28}deg);
+                        opacity: {1 - Math.abs(i - currentIndex) * 0.3};
+                        z-index: {100 - Math.abs(i - currentIndex)};
+                    "
+                >
+                    <img src={`/meses/${mes}.jpg`} alt={mes} />
+                    {#if mesesVotados.includes(mes.toLowerCase())}
+                        <div class="check">✔</div>
+                    {/if}
+                </div>
+            {/if}
+        {/each}
+
+        {#if mostrarResultados}
+            <div
+                class="card"
+                on:click={() => goto('/resultados')}
+                style="
+                    transform: translate(-50%, -50%) translateX(0px) scale(1) rotateY(0deg);
+                    opacity: 1;
+                    z-index: 200;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: 900;
+                    font-size: 1.3rem;
+                    background: #ff9900;
+                    border-radius: 18px;
+                    cursor: pointer;
+                "
+            >
+                🎉 Ver resultados
+            </div>
+        {/if}
+    </div>
+
+    <div class="hint">
+        Toca una tarjeta para abrir el mes 🎉
+    </div>
+</div>

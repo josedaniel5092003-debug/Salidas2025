@@ -1,36 +1,23 @@
 {
-	"name": "mi-app",
-	"private": true,
-	"version": "0.0.1",
-	"type": "module",
-	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch"
-	},
-	"devDependencies": {
-		"@sveltejs/adapter-auto": "^7.0.0",
-		"@sveltejs/kit": "^2.48.5",
-		"@sveltejs/vite-plugin-svelte": "^6.2.1",
-		"@tailwindcss/vite": "^4.1.17",
-		"autoprefixer": "^10.4.23",
-		"eslint": "^9.39.1",
-		"eslint-plugin-svelte": "^3.13.1",
-		"postcss": "^8.5.6",
-		"prettier": "^3.7.4",
-		"prettier-plugin-svelte": "^3.4.0",
-		"prettier-plugin-tailwindcss": "^0.7.2",
-		"svelte": "^5.43.8",
-		"svelte-check": "^4.3.4",
-		"tailwindcss": "^4.1.18",
-		"typescript": "^5.9.3",
-		"vite": "^7.2.2"
-	},
-	"dependencies": {
-		"@tailwindcss/postcss": "^4.1.18",
-		"svelte-confetti": "^2.3.2"
-	}
+  "name": "mi-app",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "3.0.0",
+    "@sveltejs/kit": "2.5.0",
+    "@sveltejs/vite-plugin-svelte": "3.0.0",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "svelte": "4.2.20",
+    "svelte-check": "3.6.0",
+    "tailwindcss": "^3.4.1",
+    "vite": "5.0.12"
+  }
 }
