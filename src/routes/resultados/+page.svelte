@@ -2,8 +2,9 @@
 <script>
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  // Si no tienes svelte-confetti instalado, comenta esta línea o instálalo
-import Confetti from 'svelte-confetti';
+  
+  // ✅ VARIABLE DINÁMICA PARA API
+  const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
   let mesesStats = [];
   let mesGanador = null;
@@ -23,7 +24,8 @@ import Confetti from 'svelte-confetti';
 
   onMount(async () => {
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/resultados/');
+      // ✅ CAMBIO IMPORTANTE: Usar API_URL dinámica
+      const res = await fetch(`${API_URL}/api/resultados/`);
       if (!res.ok) throw new Error("Error cargando resultados");
       const data = await res.json();
       
@@ -101,7 +103,7 @@ import Confetti from 'svelte-confetti';
 
   function handleImageError(e) {
     const img = e.target;
-    img.src = '/meses/default.jpg';
+    img.src = `/lib/assets/meses/${mes}.jpg`;
     img.onerror = null;
   }
 </script>
@@ -219,7 +221,7 @@ import Confetti from 'svelte-confetti';
   }
 </style>
 
-<!-- Confeti simplificado si no quieres instalar la dependencia -->
+<!-- Confeti simplificado -->
 {#if showConfetti}
   <div class="fixed inset-0 pointer-events-none z-1000">
     {#each Array(20) as _, i}
@@ -254,7 +256,7 @@ import Confetti from 'svelte-confetti';
   bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-600 text-white
   overflow-x-hidden relative">
 
-  <!-- Botón para volver - CORREGIDO: usando onclick en lugar de on:click -->
+  <!-- Botón para volver -->
   <button class="btn-volver" onclick={volver} aria-label="Volver">
     ←
   </button>
