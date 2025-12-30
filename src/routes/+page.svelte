@@ -271,7 +271,7 @@
         {#if mostrarResultados}
             <div
                 class="card"
-                on:click={irResultados}
+                on:click={() => goto('/resultados')}
                 style="
                     transform: translate(-50%, -50%) translateX(0px) scale(1) rotateY(0deg);
                     opacity: 1;

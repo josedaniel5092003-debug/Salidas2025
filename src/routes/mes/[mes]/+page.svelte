@@ -132,5 +132,6 @@
 		on:click={volver}
 	>
 		← Volver al carrusel
+		
 	</button>
 </div>
