@@ -225,14 +225,14 @@
     {#each Array(20) as _, i}
       <div 
         class="absolute w-2 h-2 rounded-full"
-        style="
-          top: {Math.random() * 100}%;
-          left: {Math.random() * 100}%;
-          background: {['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'][Math.floor(Math.random() * 6)]};
-          animation: confettiFall {1 + Math.random() * 2}s linear forwards;
-          animation-delay: {Math.random() * 0.5}s;
-        "
-      />
+  style="
+    top: {Math.random() * 100}%;
+    left: {Math.random() * 100}%;
+    background: {['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'][Math.floor(Math.random() * 6)]};
+    animation: confettiFall {1 + Math.random() * 2}s linear forwards;
+    animation-delay: {Math.random() * 0.5}s;
+  ">
+</div>
     {/each}
   </div>
   
